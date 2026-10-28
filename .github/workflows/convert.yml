@@ -1,0 +1,25 @@
+name: Convert ProRes to HEVC Alpha
+
+# 添加了手动触发器，这样你可以自己点击按钮来运行它
+on:
+  workflow_dispatch: 
+
+jobs:
+  convert_video:
+    runs-on: macos-latest
+    steps:
+      - name: Download Video
+        # ⚠️ 注意：务必将下方的网址替换为你自己的真实直链！
+        run: curl -L "https://store-na-phx-3.gofile.io/download/web/672306f8-0b0e-49f2-8d00-24ee585566f3/FootageCrate-Dust_Explosion_Foreground_Small_1-4K.mov" -o input.mov
+
+      - name: Install FFmpeg
+        run: brew install ffmpeg
+
+      - name: Convert to HEVC Alpha
+        run: ffmpeg -i input.mov -c:v hevc_videotoolbox -alpha_quality 0.8 -vtag hvc1 -c:a aac output_hevc_alpha.mov
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4 # 建议使用最新的 v4 版本
+        with:
+          name: TransparentVideo
+          path: output_hevc_alpha.mov
